@@ -4,7 +4,7 @@ require 'net/http'
 require 'nokogiri'
 
 def main
-  html = File.read('mlb-standings.html')
+  html = Net::HTTP.get(URI('http://espn.go.com/mlb/standings'))
   doc = Nokogiri::HTML(html)
   standings = doc.at_css('table')
 
