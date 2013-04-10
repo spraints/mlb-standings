@@ -1,0 +1,52 @@
+#!/usr/bin/env ruby
+
+require 'net/http'
+require 'nokogiri'
+
+def main
+  html = File.read('mlb-standings.html')
+  doc = Nokogiri::HTML(html)
+  standings = doc.at_css('table')
+
+  x = TableMaker.new
+  standings.search('./tr').each do |tr|
+    x.format(tr)
+  end
+end
+
+class TableMaker
+  def format(tr)
+    send(tr['class'].split(' ').first, tr)
+  end
+
+  def stathead(tr)
+    puts Divider, tr.text
+  end
+
+  def colhead(tr)
+    puts Underline
+    row(tr)
+  end
+
+  def oddrow(tr)
+    row(tr)
+  end
+
+  def evenrow(tr)
+    row(tr)
+  end
+
+  def row(tr)
+    division_name, *columns = tr.search('./td').map { |td| td.text }
+    division_name = division_name.ljust(15, ' ')
+    columns       = columns.map { |column| column.rjust(8, ' ') }
+    columns = columns.take((TermWidth - 15) / 8)
+    puts "#{division_name}#{columns.join}"
+  end
+
+  TermWidth = STDOUT.tty? ? `tput cols`.to_i : 103
+  Divider   = '-' * TermWidth
+  Underline = '-' * TermWidth
+end
+
+main
