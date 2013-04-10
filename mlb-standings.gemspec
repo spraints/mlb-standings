@@ -1,11 +1,10 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'mlb/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "mlb"
-  spec.version       = Mlb::VERSION
+  spec.name          = "mlb-standings"
+  spec.version       = '0.0.1'
   spec.authors       = ["Matt Burke"]
   spec.email         = ["spraints@gmail.com"]
   spec.description   =
@@ -14,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
-  spec.executables   = ['mlb']
+  spec.executables   = ['mlb-standings']
   spec.bindir        = 'exe'
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
