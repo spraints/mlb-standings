@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = "mlb-standings"
-  spec.version       = '0.0.1'
+  spec.version       = '1.0.0'
   spec.authors       = ["Matt Burke"]
   spec.email         = ["spraints@gmail.com"]
   spec.description   =
