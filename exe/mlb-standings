@@ -4,14 +4,28 @@ require 'net/http'
 require 'nokogiri'
 
 def main
-  html = Net::HTTP.get(URI('http://espn.go.com/mlb/standings'))
+  #html = Net::HTTP.get(URI('http://espn.go.com/mlb/standings'))
+  html = File.read("raw.html")
   doc = Nokogiri::HTML(html)
-  standings = doc.at_css('table')
 
-  x = TableMaker.new
-  standings.search('./tr').each do |tr|
-    x.format(tr)
+  standings_tables = doc.css("table.standings")
+
+  standings_tables.each do |table|
+    league_name = table.at_css("caption")
+    puts league_name
+    table.search("./tr").each do |tr|
+      puts tr.element_children.map(&:text).join(" ")
+#      if "th" == tr.first_element_child.node_name
+#        puts tr.search("./th").map(&:text).join(" ")
+#      else
+#        # todo
+#      end
+    end
   end
+#  standings.search('./tr').each do |tr|
+#    puts tr
+#    x.format(tr)
+#  end
 end
 
 class TableMaker
