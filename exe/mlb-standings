@@ -6,46 +6,50 @@ require 'nokogiri'
 def main
   html = Net::HTTP.get(URI('http://espn.go.com/mlb/standings'))
   doc = Nokogiri::HTML(html)
-  standings = doc.at_css('table')
+
+  standings_tables = doc.css("table.standings")
 
   x = TableMaker.new
-  standings.search('./tr').each do |tr|
-    x.format(tr)
+  standings_tables.each do |table|
+    league_name = table.at_css("caption").text
+    x.caption league_name
+    table.search("./tr").each do |tr|
+      if "th" == tr.first_element_child.node_name
+        x.th(tr)
+      else
+        x.td(tr)
+      end
+    end
   end
 end
 
 class TableMaker
-  def format(tr)
-    send(tr['class'].split(' ').first, tr)
+  def caption(str)
+    puts Divider, str
   end
 
-  def stathead(tr)
-    puts Divider, tr.text
-  end
-
-  def colhead(tr)
+  def th(tr)
     puts Underline
     row(tr)
+    puts Underline
   end
 
-  def oddrow(tr)
-    row(tr)
-  end
-
-  def evenrow(tr)
+  def td(tr)
     row(tr)
   end
 
   def row(tr)
-    division_name, *columns = tr.search('./td').map { |td| td.text }
-    division_name = division_name.ljust(15, ' ')
-    columns       = columns.map { |column| column.rjust(8, ' ') }
-    columns = columns.take((TermWidth - 15) / 8)
-    puts "#{division_name}#{columns.join}"
+    columns    = tr.element_children.map { |td| td.text }
+    columns    = columns.map { |column| column.rjust(8, ' ') }
+    if abbr = tr.first_element_child.at_css("abbr")
+      columns[0] = abbr.text.rjust(8, ' ')
+    end
+    columns    = columns.take((TermWidth - 15) / 8)
+    puts columns.join
   end
 
   TermWidth = STDOUT.tty? ? `tput cols`.to_i : 103
-  Divider   = '-' * TermWidth
+  Divider   = '=' * TermWidth
   Underline = '-' * TermWidth
 end
 
